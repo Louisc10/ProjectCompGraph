@@ -33,9 +33,10 @@ var init = function() {
         decay: 1.5
     });
     moonlight.position.copy(new THREE.Vector3(0, 500, 250));
+    scene.add(moonlight);
 
-    // asphalt = new Asphalt();
-    // scene.add(asphalt);
+    asphalt = makeAsphalt();
+    scene.add(asphalt);
 }
 
 var update = function() {
@@ -50,6 +51,22 @@ var render = function() {
 
     renderer.render(scene, thirdPersonCamera);
 };
+
+var makeAsphalt = function() {
+    let width = 500;
+    let height = 500;
+    let geometry = new THREE.PlaneGeometry(width, height);
+    let material = new THREE.MeshStandardMaterial({
+        color: new THREE.Color(0xFF0000),
+        side: THREE.DoubleSide,
+    });
+
+    let mesh = new THREE.Mesh(geometry, material);
+    mesh.position.copy(new THREE.Vector3(0, 0, 0));
+
+    mesh.rotation.x = Math.PI / 2;
+    return mesh;
+}
 
 var gameLoop = function() {
     requestAnimationFrame(gameLoop);
