@@ -55,10 +55,15 @@ var render = function() {
 var makeAsphalt = function() {
     let width = 500;
     let height = 500;
+    let texture = new THREE.TextureLoader().load("../assets/asphalt.jpg");
+    texture.wrapS = THREE.RepeatWrapping;
+    texture.wrapT = THREE.RepeatWrapping;
+    texture.repeat.set(20, 20);
+
     let geometry = new THREE.PlaneGeometry(width, height);
     let material = new THREE.MeshStandardMaterial({
-        color: new THREE.Color(0xFF0000),
-        side: THREE.DoubleSide,
+        map: texture,
+        side: THREE.DoubleSide
     });
 
     let mesh = new THREE.Mesh(geometry, material);
