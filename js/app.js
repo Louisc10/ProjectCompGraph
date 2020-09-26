@@ -6,6 +6,7 @@ var thirdPersonCamera, carDriverCamera;
 var moonlight;
 
 var asphalt;
+var road;
 
 var init = function() {
     renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
@@ -37,6 +38,9 @@ var init = function() {
 
     asphalt = makeAsphalt();
     scene.add(asphalt);
+
+    road = makeRoad();
+    scene.add(road);
 }
 
 var update = function() {
@@ -68,6 +72,26 @@ var makeAsphalt = function() {
 
     let mesh = new THREE.Mesh(geometry, material);
     mesh.position.copy(new THREE.Vector3(0, 0, 0));
+
+    mesh.rotation.x = Math.PI / 2;
+    return mesh;
+}
+
+var makeRoad = function() {
+    let width = 30;
+    let height = 500;
+    let texture = new THREE.TextureLoader().load("../assets/road.jpg");
+    texture.wrapS = THREE.RepeatWrapping;
+    texture.wrapT = THREE.RepeatWrapping;
+    texture.repeat.set(1, 8);
+    let geometry = new THREE.PlaneGeometry(width, height);
+    let material = new THREE.MeshStandardMaterial({
+        map: texture,
+        side: THREE.DoubleSide
+    });
+
+    let mesh = new THREE.Mesh(geometry, material);
+    mesh.position.copy(new THREE.Vector3(0, 0.01, 0));
 
     mesh.rotation.x = Math.PI / 2;
     return mesh;
