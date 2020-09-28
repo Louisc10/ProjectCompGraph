@@ -115,7 +115,9 @@ var makeStreetlamp = function() {
     lampContainer.add(lid);
     lid.position.y = (lampContainerHeight + lidHeight) / 2;
 
-
+    let bulbRadius = 1;
+    let bulb = makeBulb(bulbRadius);
+    lampContainer.add(bulb);
 
     return pole;
 }
@@ -160,6 +162,16 @@ var makeLid = function(height) {
     let material = new THREE.MeshPhongMaterial({
         wireframe: true,
         castShadow: true
+    });
+
+    let mesh = new THREE.Mesh(geometry, material);
+    return mesh;
+}
+
+var makeBulb = function(bulbRadius) {
+    let geometry = new THREE.SphereGeometry(bulbRadius);
+    let material = new THREE.MeshPhongMaterial({
+        side: THREE.BackSide
     });
 
     let mesh = new THREE.Mesh(geometry, material);
