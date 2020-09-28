@@ -22,7 +22,7 @@ var init = function() {
 
     const fov = 45;
     thirdPersonCamera = new THREE.PerspectiveCamera(fov, window.innerWidth / window.innerHeight, 0.1, 1000);
-    thirdPersonCamera.position.copy(new THREE.Vector3(60, 40, 60));
+    thirdPersonCamera.position.copy(new THREE.Vector3(200, 40, 200));
     thirdPersonCamera.lookAt(new THREE.Vector3(0, 0, 0));
 
     carDriverCamera = new THREE.PerspectiveCamera(fov, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -43,8 +43,15 @@ var init = function() {
     road = makeRoad();
     scene.add(road);
 
-    streetlamp = makeStreetlamp();
-    scene.add(streetlamp);
+    streetlamp = [];
+    for (let i = 0; i < 8; i++) {
+        let temp = makeStreetlamp();
+        streetlamp[i] = temp;
+        scene.add(streetlamp[i]);
+
+        streetlamp[i].position.x = i % 2 == 0 ? -20 : 20;
+        streetlamp[i].position.z = (100 * (i % 2 == 0 ? (i / 2) : (i - 1) / 2)) - 150;
+    }
 }
 
 var update = function() {
@@ -182,7 +189,8 @@ var makeBulb = function(bulbRadius) {
 }
 
 var makeBulbLight = function() {
-    var light = new THREE.PointLight(new THREE.Color("#FFFFFF"));
+    let intensity = 0.3;
+    let light = new THREE.PointLight(new THREE.Color("#FFFFFF"), intensity);
     light.castShadow = true;
 
     return light;
