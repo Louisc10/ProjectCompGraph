@@ -119,6 +119,9 @@ var makeStreetlamp = function() {
     let bulb = makeBulb(bulbRadius);
     lampContainer.add(bulb);
 
+    let light = makeBulbLight();
+    bulb.add(light);
+
     return pole;
 }
 
@@ -176,6 +179,13 @@ var makeBulb = function(bulbRadius) {
 
     let mesh = new THREE.Mesh(geometry, material);
     return mesh;
+}
+
+var makeBulbLight = function() {
+    var light = new THREE.PointLight(new THREE.Color("#FFFFFF"));
+    light.castShadow = true;
+
+    return light;
 }
 
 var gameLoop = function() {
