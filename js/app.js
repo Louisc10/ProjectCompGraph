@@ -102,14 +102,14 @@ var makeRoad = function() {
 }
 
 var makeStreetlamp = function() {
-    var pole = makePole();
+    let poleHeight = 26;
+    var pole = makePole(poleHeight);
 
     return pole;
 }
 
-var makePole = function() {
+var makePole = function(height) {
     let radius = 0.5;
-    let height = 50;
     let radial_segment = 64;
     let geometry = new THREE.CylinderGeometry(radius, radius, height, radial_segment);
     let material = new THREE.MeshStandardMaterial({
@@ -121,6 +121,7 @@ var makePole = function() {
     });
 
     let mesh = new THREE.Mesh(geometry, material);
+    mesh.position.y = height / 2;
     return mesh;
 }
 
