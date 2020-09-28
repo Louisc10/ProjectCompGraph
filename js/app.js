@@ -23,7 +23,7 @@ var init = function() {
 
     const fov = 45;
     thirdPersonCamera = new THREE.PerspectiveCamera(fov, window.innerWidth / window.innerHeight, 0.1, 1000);
-    thirdPersonCamera.position.copy(new THREE.Vector3(0, 100, 300));
+    thirdPersonCamera.position.copy(new THREE.Vector3(0, 100, 250));
     thirdPersonCamera.lookAt(new THREE.Vector3(0, 0, 0));
 
     carDriverCamera = new THREE.PerspectiveCamera(fov, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -60,8 +60,8 @@ var init = function() {
         building[i] = temp;
         scene.add(building[i]);
 
-        building[i].position.x = i % 2 == 0 ? -40 : 40;
-        building[i].position.z = (25 * (i % 2 == 0 ? (i / 2) : (i - 1) / 2)) - 225;
+        building[i].position.x = i % 2 == 0 ? -50 : 50;
+        building[i].position.z = (25 * (i % 2 == 0 ? (i / 2) : (i - 1) / 2)) - 237.5;
     }
 }
 
@@ -128,7 +128,7 @@ var makeStreetlamp = function() {
     pole.add(lampContainer);
     lampContainer.position.y = (poleHeight + lampContainerHeight) / 2;
 
-    let lidHeight = 2;
+    let lidHeight = 0;
     let lid = makeLid(lidHeight);
     lampContainer.add(lid);
     lid.position.y = (lampContainerHeight + lidHeight) / 2;
@@ -175,7 +175,7 @@ var makeLampContainer = function(height) {
 }
 
 var makeLid = function(height) {
-    let radiusTop = 1;
+    let radiusTop = 0;
     let radiusBottom = 4;
     let radial_segment = 4;
     let height_segment = 1;
@@ -216,7 +216,7 @@ var makeBuilding = function() {
     let texture = new THREE.TextureLoader().load("../assets/building.jpg");
 
     texture.wrapT = THREE.RepeatWrapping;
-    texture.repeat.set(1, 6);
+    texture.repeat.set(1, height / 30);
     let geometry = new THREE.BoxGeometry(width, height, depth);
     let material = new THREE.MeshStandardMaterial({
         map: texture,
