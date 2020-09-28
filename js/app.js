@@ -103,12 +103,18 @@ var makeRoad = function() {
 
 var makeStreetlamp = function() {
     let poleHeight = 26;
-    let lampContainerHeight = 3;
-    var pole = makePole(poleHeight);
+    let pole = makePole(poleHeight);
 
-    var lampContainer = makeLampContainer(lampContainerHeight);
+    let lampContainerHeight = 3;
+    let lampContainer = makeLampContainer(lampContainerHeight);
     pole.add(lampContainer);
     lampContainer.position.y = (poleHeight + lampContainerHeight) / 2;
+
+    let lidHeight = 2;
+    let lid = makeLid(lidHeight);
+    lampContainer.add(lid);
+    lid.position.y = (lampContainerHeight + lidHeight) / 2;
+
 
 
     return pole;
@@ -131,18 +137,32 @@ var makePole = function(height) {
 }
 
 var makeLampContainer = function(height) {
-    let radiusTop = 5;
-    let radiusBottom = 3;
+    let radiusTop = 4;
+    let radiusBottom = 2;
     let radial_segment = 4;
     let height_segment = 1;
     let geometry = new THREE.CylinderGeometry(radiusTop, radiusBottom, height, radial_segment, height_segment);
-    let material = new THREE.MeshStandardMaterial({
+    let material = new THREE.MeshPhongMaterial({
         wireframe: true,
         castShadow: true
     });
 
     let mesh = new THREE.Mesh(geometry, material);
-    mesh.position.y = height / 2;
+    return mesh;
+}
+
+var makeLid = function(height) {
+    let radiusTop = 1;
+    let radiusBottom = 4;
+    let radial_segment = 4;
+    let height_segment = 1;
+    let geometry = new THREE.CylinderGeometry(radiusTop, radiusBottom, height, radial_segment, height_segment);
+    let material = new THREE.MeshPhongMaterial({
+        wireframe: true,
+        castShadow: true
+    });
+
+    let mesh = new THREE.Mesh(geometry, material);
     return mesh;
 }
 
