@@ -8,6 +8,7 @@ var moonlight;
 var asphalt;
 var road;
 var streetlamp;
+var building;
 
 var init = function() {
     renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
@@ -22,7 +23,7 @@ var init = function() {
 
     const fov = 45;
     thirdPersonCamera = new THREE.PerspectiveCamera(fov, window.innerWidth / window.innerHeight, 0.1, 1000);
-    thirdPersonCamera.position.copy(new THREE.Vector3(200, 40, 200));
+    thirdPersonCamera.position.copy(new THREE.Vector3(0, 100, 300));
     thirdPersonCamera.lookAt(new THREE.Vector3(0, 0, 0));
 
     carDriverCamera = new THREE.PerspectiveCamera(fov, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -51,6 +52,16 @@ var init = function() {
 
         streetlamp[i].position.x = i % 2 == 0 ? -20 : 20;
         streetlamp[i].position.z = (100 * (i % 2 == 0 ? (i / 2) : (i - 1) / 2)) - 150;
+    }
+
+    building = [];
+    for (let i = 0; i < 40; i++) {
+        let temp = makeBuilding();
+        building[i] = temp;
+        scene.add(building[i]);
+
+        building[i].position.x = i % 2 == 0 ? -40 : 40;
+        building[i].position.z = (25 * (i % 2 == 0 ? (i / 2) : (i - 1) / 2)) - 225;
     }
 }
 
@@ -189,11 +200,35 @@ var makeBulb = function(bulbRadius) {
 }
 
 var makeBulbLight = function() {
-    let intensity = 0.3;
+    let intensity = 0.12;
     let light = new THREE.PointLight(new THREE.Color("#FFFFFF"), intensity);
     light.castShadow = true;
 
     return light;
+}
+
+var makeBuilding = function() {
+    let width = 25;
+    let depth = 25;
+    let x = Math.floor(Math.random() * 3);
+    let height = (x == 0) ? 60 : (x == 1) ? 90 : 120;
+
+    let texture = new THREE.TextureLoader().load("../assets/building.jpg");
+
+    texture.wrapT = THREE.RepeatWrapping;
+    texture.repeat.set(1, 6);
+    let geometry = new THREE.BoxGeometry(width, height, depth);
+    let material = new THREE.MeshStandardMaterial({
+        map: texture,
+        metalness: 0.65,
+        roughness: 0.67,
+        receiveShadow: true
+    });
+
+    let mesh = new THREE.Mesh(geometry, material);
+    mesh.position.copy(new THREE.Vector3(0, height / 2, 0));
+
+    return mesh;
 }
 
 var gameLoop = function() {
