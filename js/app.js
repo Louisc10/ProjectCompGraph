@@ -7,6 +7,7 @@ var moonlight;
 
 var asphalt;
 var road;
+var streetlamp;
 
 var init = function() {
     renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
@@ -41,6 +42,9 @@ var init = function() {
 
     road = makeRoad();
     scene.add(road);
+
+    streetlamp = makeStreetlamp();
+    scene.add(streetlamp);
 }
 
 var update = function() {
@@ -94,6 +98,29 @@ var makeRoad = function() {
     mesh.position.copy(new THREE.Vector3(0, 0.01, 0));
 
     mesh.rotation.x = Math.PI / 2;
+    return mesh;
+}
+
+var makeStreetlamp = function() {
+    var pole = makePole();
+
+    return pole;
+}
+
+var makePole = function() {
+    let radius = 0.5;
+    let height = 50;
+    let radial_segment = 64;
+    let geometry = new THREE.CylinderGeometry(radius, radius, height, radial_segment);
+    let material = new THREE.MeshStandardMaterial({
+        color: new THREE.Color("#43464B"),
+        side: THREE.DoubleSide,
+        metalness: 0.6,
+        roughness: 0.1,
+        castShadow: true
+    });
+
+    let mesh = new THREE.Mesh(geometry, material);
     return mesh;
 }
 
