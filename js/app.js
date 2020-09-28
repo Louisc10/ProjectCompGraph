@@ -103,7 +103,13 @@ var makeRoad = function() {
 
 var makeStreetlamp = function() {
     let poleHeight = 26;
+    let lampContainerHeight = 3;
     var pole = makePole(poleHeight);
+
+    var lampContainer = makeLampContainer(lampContainerHeight);
+    pole.add(lampContainer);
+    lampContainer.position.y = (poleHeight + lampContainerHeight) / 2;
+
 
     return pole;
 }
@@ -114,9 +120,24 @@ var makePole = function(height) {
     let geometry = new THREE.CylinderGeometry(radius, radius, height, radial_segment);
     let material = new THREE.MeshStandardMaterial({
         color: new THREE.Color("#43464B"),
-        side: THREE.DoubleSide,
         metalness: 0.6,
         roughness: 0.1,
+        castShadow: true
+    });
+
+    let mesh = new THREE.Mesh(geometry, material);
+    mesh.position.y = height / 2;
+    return mesh;
+}
+
+var makeLampContainer = function(height) {
+    let radiusTop = 5;
+    let radiusBottom = 3;
+    let radial_segment = 4;
+    let height_segment = 1;
+    let geometry = new THREE.CylinderGeometry(radiusTop, radiusBottom, height, radial_segment, height_segment);
+    let material = new THREE.MeshStandardMaterial({
+        wireframe: true,
         castShadow: true
     });
 
