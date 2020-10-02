@@ -1,5 +1,5 @@
 import * as THREE from '../three.js/build/three.module.js';
-// import * as Asphalt from './Asphalt';
+import {GLTFLoader} from '../three.js/examples/jsm/loaders/GLTFLoader.js';
 
 var renderer, scene;
 var thirdPersonCamera, carDriverCamera;
@@ -63,6 +63,10 @@ var init = function() {
         building[i].position.x = i % 2 == 0 ? -50 : 50;
         building[i].position.z = (25 * (i % 2 == 0 ? (i / 2) : (i - 1) / 2)) - 237.5;
     }
+
+    makeText();
+
+    make3DModel("../assets/model/model.glb");
 }
 
 var update = function() {
@@ -229,6 +233,44 @@ var makeBuilding = function() {
     mesh.position.copy(new THREE.Vector3(0, height / 2, 0));
 
     return mesh;
+}
+
+var makeText = function(){
+
+    let loader = new THREE.FontLoader().load("../three.js/examples/fonts/helvetiker_regular.typeface.json", 
+    function(response){
+        
+        let textGeometry = new THREE.TextGeometry('     ST.' + '\nASHCRE', {
+            font : response,
+            size : 6,
+            height : 5,
+            curveSegments : 12
+        })
+
+        textGeometry.center();
+
+        let material = new THREE.MeshStandardMaterial({color: '#a6a6a6'});
+        let mesh = new THREE.Mesh(textGeometry, material);
+        mesh.position.copy(new THREE.Vector3(0,20,0));
+
+        scene.add(mesh);
+    })
+
+}
+
+var make3DModel = function(url){
+    var loader = new GLTFLoader();
+    loader.load(url, function(gltf){
+        let object = gltf.scene;
+        object.position.set(5.5,25,100);
+        object.scale.set(3.5, 3.5, 3.5);
+        object.rotation.y = -(Math.PI);
+        object.rotation.z = 0;
+
+        scene.add(object);
+        
+    })
+
 }
 
 var gameLoop = function() {
