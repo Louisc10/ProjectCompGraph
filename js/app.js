@@ -1,13 +1,14 @@
 import * as THREE from '../three.js/build/three.module.js';
 import { GLTFLoader } from '../three.js/examples/jsm/loaders/GLTFLoader.js';
-import { OrbitControls } from '../three.js/build/OrbitControls';
+// import { OrbitControls } from '../three.js/build/OrbitControls';
 
 var renderer, scene;
-var thirdPersonCamera, carDriverCamera;
-var moonlight;
+var thirdPersonCamera, carDriverCamera, currCamera;
+var control;
 
 var asphalt;
 var road;
+var moonlight;
 var streetlamp;
 var building;
 
@@ -31,12 +32,11 @@ var init = function() {
     carDriverCamera.position.copy(new THREE.Vector3(60, 40, 60));
     carDriverCamera.lookAt(new THREE.Vector3(0, 0, 0));
 
-    moonlight = new THREE.PointLight({
-        color: "#F4F1C9",
-        distance: 1000,
-        decay: 1.5
-    });
-    moonlight.position.copy(new THREE.Vector3(0, 500, 250));
+    currCamera = thirdPersonCamera;
+
+    // control = new OrbitControls(thirdPersonCamera, document.domElement);
+
+    moonlight = makeMoonlight();
     scene.add(moonlight);
 
     asphalt = makeAsphalt();
@@ -79,8 +79,10 @@ var render = function() {
     renderer.setSize(window.innerWidth, window.innerHeight);
     thirdPersonCamera.aspect = window.innerWidth / window.innerHeight;
     thirdPersonCamera.updateProjectionMatrix();
+    carDriverCamera.aspect = window.innerWidth / window.innerHeight;
+    carDriverCamera.updateProjectionMatrix();
 
-    renderer.render(scene, thirdPersonCamera);
+    renderer.render(scene, currCamera);
 };
 
 var makeAsphalt = function() {
@@ -236,6 +238,17 @@ var makeBuilding = function() {
     return mesh;
 }
 
+var makeMoonlight = function() {
+    let light = new THREE.PointLight({
+        color: "#F4F1C9",
+        distance: 1000,
+        decay: 1.5
+    });
+    light.position.copy(new THREE.Vector3(0, 500, 250));
+
+    return light;
+}
+
 var makeText = function() {
 
     let loader = new THREE.FontLoader().load("../three.js/examples/fonts/helvetiker_regular.typeface.json",
@@ -273,6 +286,20 @@ var make3DModel = function(url) {
     })
 
 }
+
+var keyListener = function(event) {
+    let key = event.keyCode;
+
+    if (key == 17) {
+        if (currCamera == carDriverCamera) {
+            currCamera = thirdPersonCamera;
+        } else {
+            currCamera = carDriverCamera;
+        }
+    }
+}
+
+window.addEventListener("keydown", keyListener);
 
 var gameLoop = function() {
     requestAnimationFrame(gameLoop);
