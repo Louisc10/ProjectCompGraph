@@ -1,5 +1,6 @@
 import * as THREE from '../three.js/build/three.module.js';
-import {GLTFLoader} from '../three.js/examples/jsm/loaders/GLTFLoader.js';
+import { GLTFLoader } from '../three.js/examples/jsm/loaders/GLTFLoader.js';
+import { OrbitControls } from '../three.js/build/OrbitControls';
 
 var renderer, scene;
 var thirdPersonCamera, carDriverCamera;
@@ -235,40 +236,40 @@ var makeBuilding = function() {
     return mesh;
 }
 
-var makeText = function(){
+var makeText = function() {
 
-    let loader = new THREE.FontLoader().load("../three.js/examples/fonts/helvetiker_regular.typeface.json", 
-    function(response){
-        
-        let textGeometry = new THREE.TextGeometry('     ST.' + '\nASHCRE', {
-            font : response,
-            size : 6,
-            height : 5,
-            curveSegments : 12
+    let loader = new THREE.FontLoader().load("../three.js/examples/fonts/helvetiker_regular.typeface.json",
+        function(response) {
+
+            let textGeometry = new THREE.TextGeometry('     ST.' + '\nASHCRE', {
+                font: response,
+                size: 6,
+                height: 5,
+                curveSegments: 12
+            })
+
+            textGeometry.center();
+
+            let material = new THREE.MeshStandardMaterial({ color: '#a6a6a6' });
+            let mesh = new THREE.Mesh(textGeometry, material);
+            mesh.position.copy(new THREE.Vector3(0, 20, 0));
+
+            scene.add(mesh);
         })
-
-        textGeometry.center();
-
-        let material = new THREE.MeshStandardMaterial({color: '#a6a6a6'});
-        let mesh = new THREE.Mesh(textGeometry, material);
-        mesh.position.copy(new THREE.Vector3(0,20,0));
-
-        scene.add(mesh);
-    })
 
 }
 
-var make3DModel = function(url){
+var make3DModel = function(url) {
     var loader = new GLTFLoader();
-    loader.load(url, function(gltf){
+    loader.load(url, function(gltf) {
         let object = gltf.scene;
-        object.position.set(5.5,25,100);
+        object.position.set(5.5, 25, 100);
         object.scale.set(3.5, 3.5, 3.5);
         object.rotation.y = -(Math.PI);
         object.rotation.z = 0;
 
         scene.add(object);
-        
+
     })
 
 }
