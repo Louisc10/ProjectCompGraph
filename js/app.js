@@ -23,7 +23,7 @@ var init = function() {
     document.body.appendChild(renderer.domElement);
 
     scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x5555ff);
+    scene.background = new THREE.Color(0x444444);
 
     const fov = 45;
     thirdPersonCamera = new THREE.PerspectiveCamera(fov, window.innerWidth / window.innerHeight, 0.1, 1000);
