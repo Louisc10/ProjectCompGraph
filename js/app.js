@@ -1,6 +1,6 @@
 import * as THREE from '../three.js/build/three.module.js';
 import { GLTFLoader } from '../three.js/examples/jsm/loaders/GLTFLoader.js';
-// import { OrbitControls } from '../three.js/build/OrbitControls';
+import { OrbitControls } from '../three.js/build/OrbitControls.js';
 
 var renderer, scene;
 var thirdPersonCamera, carDriverCamera, currCamera;
@@ -33,7 +33,7 @@ var init = function() {
     carDriverCamera = new THREE.PerspectiveCamera(fov, window.innerWidth / window.innerHeight, 0.1, 1000);
     currCamera = thirdPersonCamera;
 
-    // control = new OrbitControls(thirdPersonCamera, renderer.domElement);
+    control = new OrbitControls(thirdPersonCamera, renderer.domElement);
 
     moonlight = makeMoonlight();
     scene.add(moonlight);
@@ -290,13 +290,42 @@ var keyListener = function(event) {
     }
 }
 
+var mouseListener = function(event) {
+    let x = event.clientX;
+    let y = event.clientY;
+
+    let midX = window.innerWidth / 2;
+    let midY = window.innerHeight / 2;
+
+    x -= midX;
+    y -= midY;
+
+    // if (x < 0) {
+    //     x = 0;
+    // }
+
+    thirdPersonCamera.position.set(x, 100, y);
+}
+
 window.addEventListener("keydown", keyListener);
+// window.addEventListener("mousemove", mouseListener);
 
 var update = function() {
+    if (thirdPersonCamera.position.x < -35) {
+        thirdPersonCamera.position.x = -35;
+    }
+    if (thirdPersonCamera.position.x > 35) {
+        thirdPersonCamera.position.x = 35;
+    }
+    if (thirdPersonCamera.position.y < 1) {
+        thirdPersonCamera.position.y = 1;
+    }
+
     if (car != null) {
         carDriverCamera.position.x = car.position.x;
         carDriverCamera.position.y = car.position.y + 10;
         carDriverCamera.position.z = car.position.z - 15;
+        thirdPersonCamera.lookAt(car.position);
     }
 }
 
