@@ -11,6 +11,8 @@ var road;
 var moonlight;
 var streetlamp;
 var building;
+var text;
+var car;
 
 var init = function() {
     renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
@@ -29,12 +31,9 @@ var init = function() {
     thirdPersonCamera.lookAt(new THREE.Vector3(0, 0, 0));
 
     carDriverCamera = new THREE.PerspectiveCamera(fov, window.innerWidth / window.innerHeight, 0.1, 1000);
-    carDriverCamera.position.copy(new THREE.Vector3(60, 40, 60));
-    carDriverCamera.lookAt(new THREE.Vector3(0, 0, 0));
-
     currCamera = thirdPersonCamera;
 
-    // control = new OrbitControls(thirdPersonCamera, document.domElement);
+    // control = new OrbitControls(thirdPersonCamera, renderer.domElement);
 
     moonlight = makeMoonlight();
     scene.add(moonlight);
@@ -69,21 +68,6 @@ var init = function() {
 
     make3DModel("../assets/model/model.glb");
 }
-
-var update = function() {
-
-}
-
-var render = function() {
-    renderer.clear();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    thirdPersonCamera.aspect = window.innerWidth / window.innerHeight;
-    thirdPersonCamera.updateProjectionMatrix();
-    carDriverCamera.aspect = window.innerWidth / window.innerHeight;
-    carDriverCamera.updateProjectionMatrix();
-
-    renderer.render(scene, currCamera);
-};
 
 var makeAsphalt = function() {
     let width = 500;
@@ -264,10 +248,10 @@ var makeText = function() {
             textGeometry.center();
 
             let material = new THREE.MeshStandardMaterial({ color: '#a6a6a6' });
-            let mesh = new THREE.Mesh(textGeometry, material);
-            mesh.position.copy(new THREE.Vector3(0, 20, 0));
+            text = new THREE.Mesh(textGeometry, material);
+            text.position.copy(new THREE.Vector3(0, 25, 0));
 
-            scene.add(mesh);
+            scene.add(text);
         })
 
 }
@@ -275,14 +259,13 @@ var makeText = function() {
 var make3DModel = function(url) {
     var loader = new GLTFLoader();
     loader.load(url, function(gltf) {
-        let object = gltf.scene;
-        object.position.set(5.5, 25, 100);
-        object.scale.set(3.5, 3.5, 3.5);
-        object.rotation.y = -(Math.PI);
-        object.rotation.z = 0;
+        car = gltf.scene;
+        car.position.set(5.5, 0, 100);
+        car.scale.set(3.5, 3.5, 3.5);
+        car.rotation.y = -(Math.PI);
+        car.rotation.z = 0;
 
-        scene.add(object);
-
+        scene.add(car);
     })
 
 }
@@ -296,10 +279,37 @@ var keyListener = function(event) {
         } else {
             currCamera = carDriverCamera;
         }
+    } else if (key == 87) {
+        if (currCamera == carDriverCamera) {
+            car.position.z -= 3;
+        }
+    } else if (key == 83) {
+        if (currCamera == carDriverCamera) {
+            car.position.z += 3;
+        }
     }
 }
 
 window.addEventListener("keydown", keyListener);
+
+var update = function() {
+    if (car != null) {
+        carDriverCamera.position.x = car.position.x;
+        carDriverCamera.position.y = car.position.y + 10;
+        carDriverCamera.position.z = car.position.z - 15;
+    }
+}
+
+var render = function() {
+    renderer.clear();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    thirdPersonCamera.aspect = window.innerWidth / window.innerHeight;
+    thirdPersonCamera.updateProjectionMatrix();
+    carDriverCamera.aspect = window.innerWidth / window.innerHeight;
+    carDriverCamera.updateProjectionMatrix();
+
+    renderer.render(scene, currCamera);
+};
 
 var gameLoop = function() {
     requestAnimationFrame(gameLoop);
