@@ -260,8 +260,8 @@ var make3DModel = function(url) {
     var loader = new GLTFLoader();
     loader.load(url, function(gltf) {
         car = gltf.scene;
-        car.position.set(5.5, 0, 100);
-        car.scale.set(3.5, 3.5, 3.5);
+        car.position.set(7, 0, 100);
+        car.scale.set(4.5, 4.5, 4.5);
         car.rotation.y = -(Math.PI);
         car.rotation.z = 0;
 
