@@ -258,14 +258,12 @@ var makeSpotlight = function() {
 var makeText = function() {
     new THREE.FontLoader().load("../three.js/examples/fonts/helvetiker_regular.typeface.json",
         function(response) {
-
             let textGeometry = new THREE.TextGeometry('     ST.' + '\nASHCRE', {
                 font: response,
                 size: 6,
                 height: 5,
                 curveSegments: 12
             })
-
             textGeometry.center();
 
             let material = new THREE.MeshStandardMaterial({ color: '#a6a6a6' });
@@ -376,27 +374,32 @@ var keyListener = function(event) {
 var mouseClickListener = function(event) {
     let key = event.which;
     if (key == 3) {
-        mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-        mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-        raycaster.setFromCamera(mouse, currCamera);
-        const intersects = raycaster.intersectObjects(scene.children);
-        console.log(scene.children)
-        console.log(intersects)
+        let w = window.innerWidth
+        let h = window.innerHeight
+        mouse.x = event.clientX / w * 2 - 1
+        mouse.y = event.clientY / h * -2 + 1
 
-        for (let i = 0; i < intersects.length; i++) {
-            // intersects[i].object.material.color.set(0xff0000);
-        }
-        streetlamp.forEach(lamp => {
-            // console.log(lamp.children[3])
-            if (lamp.children[4].intensity == 0) {
-                lamp.children[4].intensity = 1;
-                lamp.children[3].side = THREE.BackSide;
+        raycaster.setFromCamera(mouse, currCamera)
 
-            } else {
-                lamp.children[4].intensity = 0;
-                lamp.children[3].side = THREE.FrontSide;
-            }
+        let x = []
+        streetlamp.forEach(i => {
+            x.push(i.children[3]);
         });
+        let items = raycaster.intersectObjects(x)
+        console.log(items)
+        items.forEach(i => {
+            streetlamp.forEach(j => {
+                if (j.children[3].uuid.localeCompare(i.object.uuid) == 0)
+                    if (j.children[4].intensity == 0) {
+                        j.children[4].intensity = 1;
+                        j.children[3].side = THREE.BackSide;
+
+                    } else {
+                        j.children[4].intensity = 0;
+                        j.children[3].side = THREE.FrontSide;
+                    }
+            });
+        })
     }
 }
 
