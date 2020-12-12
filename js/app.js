@@ -13,6 +13,7 @@ var streetlamp;
 var building;
 var text;
 var car;
+var background;
 
 var bulbModel, lidModel, poleModel, lightModel;
 
