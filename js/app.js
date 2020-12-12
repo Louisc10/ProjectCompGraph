@@ -41,6 +41,9 @@ var init = function() {
     asphalt = makeAsphalt();
     scene.add(asphalt);
 
+    background = makeBackgroundSkyBox();
+    scene.add(background);
+
     road = makeRoad();
     scene.add(road);
 
@@ -233,6 +236,13 @@ var makeMoonlight = function() {
     return light;
 }
 
+var makeSpotlight = function() {
+    let light = new THREE.SpotLight(0xffffff);
+    light.angle = THREE.Math.degToRad(15)
+    light.intensity = 2.5
+    return light;
+}
+
 var makeText = function() {
 
     let loader = new THREE.FontLoader().load("../three.js/examples/fonts/helvetiker_regular.typeface.json",
@@ -265,9 +275,66 @@ var make3DModel = function(url) {
         car.rotation.y = -(Math.PI);
         car.rotation.z = 0;
 
+        leftLight = makeSpotlight();
+        leftLight.position.x -= 0.5
+
+        rightLight = makeSpotlight();
+        rightLight.position.x += 0.5
+        
+        car.add(leftLight);
+        car.add(rightLight);
+
         scene.add(car);
     })
 
+}
+
+var makeBackgroundSkyBox = function(){
+    //px, nx, py, ny, pz, nz
+    let geometry = new THREE.BoxGeometry(500, 500, 500);
+    // geometry.colors();
+    let texture1 = new THREE.TextureLoader().load("../assets/cubemap/px.png");
+    let texture2 = new THREE.TextureLoader().load("../assets/cubemap/nx.png");
+    let texture3 = new THREE.TextureLoader().load("../assets/cubemap/py.png");
+    let texture4 = new THREE.TextureLoader().load("../assets/cubemap/ny.png");
+    let texture5 = new THREE.TextureLoader().load("../assets/cubemap/pz.png");
+    let texture6 = new THREE.TextureLoader().load("../assets/cubemap/nz.png");
+    let material1 = new THREE.MeshBasicMaterial({
+        map: texture1,
+        color: 0x777777,
+        side: THREE.BackSide
+    });let material2 = new THREE.MeshBasicMaterial({
+        map: texture2,
+        color: 0x777777,
+        side: THREE.BackSide
+    });let material3 = new THREE.MeshBasicMaterial({
+        map: texture3,
+        color: 0x777777,
+        side: THREE.BackSide
+    });let material4 = new THREE.MeshBasicMaterial({
+        map: texture4,
+        color: 0x777777,
+        side: THREE.BackSide
+    });let material5 = new THREE.MeshBasicMaterial({
+        map: texture5,
+        color: 0x777777,
+        side: THREE.BackSide
+    });let material6 = new THREE.MeshBasicMaterial({
+        map: texture6,
+        color: 0x777777,
+        side: THREE.BackSide
+    });
+    let materials = [
+        material1,
+        material2,
+        material3,
+        material4,
+        material5,
+        material6
+    ]
+    let skyBoxMesh = new THREE.Mesh(geometry,materials);
+    skyBoxMesh.position.copy(new THREE.Vector3(0, -70, 0));
+    return skyBoxMesh;
 }
 
 var keyListener = function(event) {
@@ -307,8 +374,27 @@ var mouseListener = function(event) {
     thirdPersonCamera.position.set(x, 100, y);
 }
 
+// var mouseClickListener = function(event) {
+// //     •	Each lamp can be switched on and off using right click on the bulb part
+// // 	Upon switching off, set the light intensity to 0 and material side to front side
+// // 	Upon switching on, set the light intensity to 1 and material side to back side
+
+
+//     let key = event.which;
+
+//     if(key == 3){
+        
+//     }
+
+
+// }
+
 window.addEventListener("keydown", keyListener);
 // window.addEventListener("mousemove", mouseListener);
+
+//window.addEventListener("mousedown", mouseClickListener);
+
+
 
 var update = function() {
     if (thirdPersonCamera.position.x < -35) {
@@ -336,9 +422,16 @@ var render = function() {
     thirdPersonCamera.updateProjectionMatrix();
     carDriverCamera.aspect = window.innerWidth / window.innerHeight;
     carDriverCamera.updateProjectionMatrix();
-
+    renderLight();
     renderer.render(scene, currCamera);
 };
+
+var renderLight = function(){
+    leftLight.target.position.z = -500;
+    leftLight.target.updateMatrixWorld();
+    rightLight.target.position.z = -500;
+    rightLight.target.updateMatrixWorld();
+}
 
 var gameLoop = function() {
     requestAnimationFrame(gameLoop);
