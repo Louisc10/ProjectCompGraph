@@ -15,20 +15,10 @@ var text;
 var car;
 var background;
 
-var bulbModel, lidModel, poleModel, lightModel;
-
-var groupLamp = {
-    bulb: bulbModel,
-    lid: lidModel,
-    pole: poleModel,
-    light: lightModel
-}
-
-var groupLampArray = []
-
 let rightLight, leftLight;
 
-
+const raycaster = new THREE.Raycaster();
+const mouse = new THREE.Vector2();
 
 var init = function() {
     renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
@@ -130,33 +120,32 @@ var makeRoad = function() {
 }
 
 var makeStreetlamp = function() {
+    let streetLamp = new THREE.Group();
+
     let poleHeight = 26;
     let pole = makePole(poleHeight);
+    streetLamp.add(pole);
 
     let lampContainerHeight = 3;
     let lampContainer = makeLampContainer(lampContainerHeight);
-    pole.add(lampContainer);
-    lampContainer.position.y = (poleHeight + lampContainerHeight) / 2;
+    streetLamp.add(lampContainer);
+    lampContainer.position.y = poleHeight + (lampContainerHeight / 2);
 
-    let lidHeight = 0;
+    let lidHeight = 1;
     let lid = makeLid(lidHeight);
-    lampContainer.add(lid);
-    lid.position.y = (lampContainerHeight + lidHeight) / 2;
+    streetLamp.add(lid);
+    lid.position.y = poleHeight + lampContainerHeight + (lidHeight / 2);
 
     let bulbRadius = 1;
     let bulb = makeBulb(bulbRadius);
-    lampContainer.add(bulb);
+    streetLamp.add(bulb);
+    bulb.position.y = poleHeight + bulbRadius;
 
     let light = makeBulbLight();
-    bulb.add(light);
+    streetLamp.add(light);
+    light.position.y = poleHeight + bulbRadius;
 
-    groupLamp.bulb = bulb;
-    groupLamp.lid = lid;
-    groupLamp.pole = pole;
-    groupLamp.light = light;
-    groupLampArray.push(groupLamp)
-
-    return pole;
+    return streetLamp;
 }
 
 var makePole = function(height) {
@@ -164,13 +153,13 @@ var makePole = function(height) {
     let radial_segment = 64;
     let geometry = new THREE.CylinderGeometry(radius, radius, height, radial_segment);
     let material = new THREE.MeshStandardMaterial({
-        color: new THREE.Color("#43464B"),
+        color: 0x43464B,
         metalness: 0.6,
         roughness: 0.1,
-        castShadow: true
     });
 
     let mesh = new THREE.Mesh(geometry, material);
+    mesh.castShadow = true;
     mesh.position.y = height / 2;
     return mesh;
 }
@@ -183,10 +172,10 @@ var makeLampContainer = function(height) {
     let geometry = new THREE.CylinderGeometry(radiusTop, radiusBottom, height, radial_segment, height_segment);
     let material = new THREE.MeshPhongMaterial({
         wireframe: true,
-        castShadow: true
     });
 
     let mesh = new THREE.Mesh(geometry, material);
+    mesh.castShadow = true;
     return mesh;
 }
 
@@ -198,10 +187,10 @@ var makeLid = function(height) {
     let geometry = new THREE.CylinderGeometry(radiusTop, radiusBottom, height, radial_segment, height_segment);
     let material = new THREE.MeshPhongMaterial({
         wireframe: true,
-        castShadow: true
     });
 
     let mesh = new THREE.Mesh(geometry, material);
+    mesh.castShadow = true;
     return mesh;
 }
 
@@ -216,8 +205,9 @@ var makeBulb = function(bulbRadius) {
 }
 
 var makeBulbLight = function() {
-    let intensity = 0.12;
-    let light = new THREE.PointLight(new THREE.Color("#FFFFFF"), intensity);
+    let intensity = 1;
+    let distance = 100;
+    let light = new THREE.PointLight(new THREE.Color("#FFFFFF"), intensity, distance);
     light.castShadow = true;
 
     return light;
@@ -238,18 +228,18 @@ var makeBuilding = function() {
         map: texture,
         metalness: 0.65,
         roughness: 0.67,
-        receiveShadow: true
     });
 
     let mesh = new THREE.Mesh(geometry, material);
     mesh.position.copy(new THREE.Vector3(0, height / 2, 0));
+    mesh.receiveShadow = true;
 
     return mesh;
 }
 
 var makeMoonlight = function() {
     let light = new THREE.PointLight({
-        color: "#F4F1C9",
+        color: 0xF4F1C9,
         distance: 1000,
         decay: 1.5
     });
@@ -266,8 +256,7 @@ var makeSpotlight = function() {
 }
 
 var makeText = function() {
-
-    let loader = new THREE.FontLoader().load("../three.js/examples/fonts/helvetiker_regular.typeface.json",
+    new THREE.FontLoader().load("../three.js/examples/fonts/helvetiker_regular.typeface.json",
         function(response) {
 
             let textGeometry = new THREE.TextGeometry('     ST.' + '\nASHCRE', {
@@ -285,7 +274,6 @@ var makeText = function() {
 
             scene.add(text);
         })
-
 }
 
 var make3DModel = function(url) {
@@ -302,16 +290,15 @@ var make3DModel = function(url) {
 
         rightLight = makeSpotlight();
         rightLight.position.x += 0.5
-        
+
         car.add(leftLight);
         car.add(rightLight);
 
         scene.add(car);
     })
-
 }
 
-var makeBackgroundSkyBox = function(){
+var makeBackgroundSkyBox = function() {
     //px, nx, py, ny, pz, nz
     let geometry = new THREE.BoxGeometry(500, 500, 500);
     // geometry.colors();
@@ -325,23 +312,28 @@ var makeBackgroundSkyBox = function(){
         map: texture1,
         color: 0x777777,
         side: THREE.BackSide
-    });let material2 = new THREE.MeshBasicMaterial({
+    });
+    let material2 = new THREE.MeshBasicMaterial({
         map: texture2,
         color: 0x777777,
         side: THREE.BackSide
-    });let material3 = new THREE.MeshBasicMaterial({
+    });
+    let material3 = new THREE.MeshBasicMaterial({
         map: texture3,
         color: 0x777777,
         side: THREE.BackSide
-    });let material4 = new THREE.MeshBasicMaterial({
+    });
+    let material4 = new THREE.MeshBasicMaterial({
         map: texture4,
         color: 0x777777,
         side: THREE.BackSide
-    });let material5 = new THREE.MeshBasicMaterial({
+    });
+    let material5 = new THREE.MeshBasicMaterial({
         map: texture5,
         color: 0x777777,
         side: THREE.BackSide
-    });let material6 = new THREE.MeshBasicMaterial({
+    });
+    let material6 = new THREE.MeshBasicMaterial({
         map: texture6,
         color: 0x777777,
         side: THREE.BackSide
@@ -354,7 +346,7 @@ var makeBackgroundSkyBox = function(){
         material5,
         material6
     ]
-    let skyBoxMesh = new THREE.Mesh(geometry,materials);
+    let skyBoxMesh = new THREE.Mesh(geometry, materials);
     skyBoxMesh.position.copy(new THREE.Vector3(0, -70, 0));
     return skyBoxMesh;
 }
@@ -370,63 +362,51 @@ var keyListener = function(event) {
         }
     } else if (key == 87) {
         if (currCamera == carDriverCamera) {
-            car.position.z -= 3;
+            if (car.position.z > -230)
+                car.position.z -= 3;
         }
     } else if (key == 83) {
         if (currCamera == carDriverCamera) {
-            car.position.z += 3;
+            if (car.position.z < 230)
+                car.position.z += 3;
         }
     }
 }
 
-var mouseListener = function(event) {
-    let x = event.clientX;
-    let y = event.clientY;
-
-    let midX = window.innerWidth / 2;
-    let midY = window.innerHeight / 2;
-
-    x -= midX;
-    y -= midY;
-
-    // if (x < 0) {
-    //     x = 0;
-    // }
-
-    thirdPersonCamera.position.set(x, 100, y);
-}
-
-var switchLight = false;
 var mouseClickListener = function(event) {
     let key = event.which;
-    console.log('mouse keteken')
-    if(key == 3){
-        if(switchLight){
-            groupLampArray.forEach(lamp => {
-                lamp.light.intensity = 0
-            });    
-            console.log('mati')
-            switchLight = false
-        }else{
-            groupLampArray.forEach(lamp => {
-                lamp.light.intensity = 1
-            });
-            console.log('nyala')
-            switchLight = true
+    if (key == 3) {
+        mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+        mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+        raycaster.setFromCamera(mouse, currCamera);
+        const intersects = raycaster.intersectObjects(scene.children);
+        console.log(scene.children)
+        console.log(intersects)
+
+        for (let i = 0; i < intersects.length; i++) {
+            // intersects[i].object.material.color.set(0xff0000);
         }
+        streetlamp.forEach(lamp => {
+            // console.log(lamp.children[3])
+            if (lamp.children[4].intensity == 0) {
+                lamp.children[4].intensity = 1;
+                lamp.children[3].side = THREE.BackSide;
+
+            } else {
+                lamp.children[4].intensity = 0;
+                lamp.children[3].side = THREE.FrontSide;
+            }
+        });
     }
 }
 
 window.addEventListener("keydown", keyListener);
 window.addEventListener("mousedown", mouseClickListener);
-// window.addEventListener("mousemove", mouseListener);
-
 
 var update = function() {
     if (thirdPersonCamera.position.x < -35) {
         thirdPersonCamera.position.x = -35;
-    }
-    if (thirdPersonCamera.position.x > 35) {
+    } else if (thirdPersonCamera.position.x > 35) {
         thirdPersonCamera.position.x = 35;
     }
     if (thirdPersonCamera.position.y < 1) {
@@ -438,6 +418,7 @@ var update = function() {
         carDriverCamera.position.y = car.position.y + 10;
         carDriverCamera.position.z = car.position.z - 15;
         thirdPersonCamera.lookAt(car.position);
+        renderLight();
     }
 }
 
@@ -448,11 +429,11 @@ var render = function() {
     thirdPersonCamera.updateProjectionMatrix();
     carDriverCamera.aspect = window.innerWidth / window.innerHeight;
     carDriverCamera.updateProjectionMatrix();
-    renderLight();
+
     renderer.render(scene, currCamera);
 };
 
-var renderLight = function(){
+var renderLight = function() {
     leftLight.target.position.z = -500;
     leftLight.target.updateMatrixWorld();
     rightLight.target.position.z = -500;
