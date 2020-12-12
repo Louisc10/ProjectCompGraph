@@ -40,6 +40,10 @@ var init = function() {
     currCamera = thirdPersonCamera;
 
     control = new OrbitControls(thirdPersonCamera, renderer.domElement);
+    control.mouseButtons = {
+        LEFT: THREE.MOUSE.ROTATE,
+        MIDDLE: THREE.MOUSE.DOLLY,
+    }
 
     moonlight = makeMoonlight();
     scene.add(moonlight);
@@ -386,7 +390,6 @@ var mouseClickListener = function(event) {
             x.push(i.children[3]);
         });
         let items = raycaster.intersectObjects(x)
-        console.log(items)
         items.forEach(i => {
             streetlamp.forEach(j => {
                 if (j.children[3].uuid.localeCompare(i.object.uuid) == 0)
