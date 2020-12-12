@@ -14,6 +14,21 @@ var building;
 var text;
 var car;
 
+var bulbModel, lidModel, poleModel, lightModel;
+
+var groupLamp = {
+    bulb: bulbModel,
+    lid: lidModel,
+    pole: poleModel,
+    light: lightModel
+}
+
+var groupLampArray = []
+
+let rightLight, leftLight;
+
+
+
 var init = function() {
     renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.autoClear = false;
@@ -133,6 +148,12 @@ var makeStreetlamp = function() {
 
     let light = makeBulbLight();
     bulb.add(light);
+
+    groupLamp.bulb = bulb;
+    groupLamp.lid = lid;
+    groupLamp.pole = pole;
+    groupLamp.light = light;
+    groupLampArray.push(groupLamp)
 
     return pole;
 }
@@ -374,26 +395,30 @@ var mouseListener = function(event) {
     thirdPersonCamera.position.set(x, 100, y);
 }
 
-// var mouseClickListener = function(event) {
-// //     •	Each lamp can be switched on and off using right click on the bulb part
-// // 	Upon switching off, set the light intensity to 0 and material side to front side
-// // 	Upon switching on, set the light intensity to 1 and material side to back side
-
-
-//     let key = event.which;
-
-//     if(key == 3){
-        
-//     }
-
-
-// }
+var switchLight = false;
+var mouseClickListener = function(event) {
+    let key = event.which;
+    console.log('mouse keteken')
+    if(key == 3){
+        if(switchLight){
+            groupLampArray.forEach(lamp => {
+                lamp.light.intensity = 0
+            });    
+            console.log('mati')
+            switchLight = false
+        }else{
+            groupLampArray.forEach(lamp => {
+                lamp.light.intensity = 1
+            });
+            console.log('nyala')
+            switchLight = true
+        }
+    }
+}
 
 window.addEventListener("keydown", keyListener);
+window.addEventListener("mousedown", mouseClickListener);
 // window.addEventListener("mousemove", mouseListener);
-
-//window.addEventListener("mousedown", mouseClickListener);
-
 
 
 var update = function() {
