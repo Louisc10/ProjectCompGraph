@@ -42,7 +42,6 @@ var init = function() {
     control = new OrbitControls(thirdPersonCamera, renderer.domElement);
     control.mouseButtons = {
         LEFT: THREE.MOUSE.ROTATE,
-        MIDDLE: THREE.MOUSE.DOLLY,
     }
 
     moonlight = makeMoonlight();
